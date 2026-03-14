@@ -1,0 +1,36 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"*.h": "c",
+			"*.rmd": "markdown",
+			"*.hh": "c++",
+			"optional": "cpp",
+			"regex": "cpp",
+			"vector": "cpp",
+			"map": "cpp",
+			"iostream": "cpp",
+			"string": "cpp",
+			"stdexcept": "cpp",
+			"__locale": "cpp",
+			"string_view": "cpp",
+			"__split_buffer": "cpp",
+			"deque": "cpp",
+			"list": "cpp",
+			"fstream": "cpp",
+			"istream": "cpp",
+			"locale": "cpp",
+			"streambuf": "cpp",
+			"ratio": "cpp"
+		},
+		"C_Cpp.default.defines": [
+			"POINT_MAIN",
+			"BLOCK_MAIN",
+			"PROGRAM_MAIN"
+		],
+	}
+}
