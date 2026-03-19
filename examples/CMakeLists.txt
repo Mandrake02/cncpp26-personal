@@ -29,3 +29,4 @@ endmacro()
 #                            |_|                          |___/
 
 create_example(examples_1 SRCS test.cpp)
+create_example(examples_2 SRCS test.cpp)
