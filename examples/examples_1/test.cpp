@@ -26,6 +26,8 @@ double sum(double a, double b);
 
 template <typename T> T templated_sum(T a, T b);
 
+template <> int templated_sum(int a, int b);
+
 int main() {
 
   int a = 10;
@@ -72,7 +74,8 @@ int main() {
 
   x3 = templated_sum(x1, x2);
   y3 = templated_sum(y1, y2);
-  templated_sum<int>(0, 1);
+  int my_int = templated_sum<int>(0, 1);
+  my_int = templated_sum<float>(0, 1);
 
   return 0;
 }
@@ -90,6 +93,6 @@ double sum(double a, double b) {
 template <typename T> T templated_sum(T a, T b) { return a + b; }
 
 template <> int templated_sum(int a, int b) {
-  std::cout << "float sum" << std::endl;
+  std::cout << "int sum" << std::endl;
   return a + b;
 }
