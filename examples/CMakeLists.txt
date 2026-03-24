@@ -30,3 +30,4 @@ endmacro()
 
 create_example(examples_1 SRCS test.cpp)
 create_example(examples_2 SRCS test.cpp)
+create_example(try_it_yourself SRCS main.cpp vector2D.cpp)
