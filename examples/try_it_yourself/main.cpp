@@ -23,5 +23,15 @@ int main() {
   for(auto i=0; i<esercizio.size(); ++i) {
     esercizio[i].print();
   }
+
+  for(auto i=0; i<esercizio.size(); ++i) {
+    esercizio[i].print();
+  }
+  for(auto element : esercizio) {
+    element.scale(2);
+  }
+  for(auto i=0; i<esercizio.size(); ++i) {
+    esercizio[i].print();
+  }
   return 0;
 }
