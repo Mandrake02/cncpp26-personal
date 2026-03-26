@@ -39,6 +39,11 @@ Vector2D Vector2D::operator*(double scalar) const {
   return Vector2D(_x * scalar, _y * scalar);
 }
 
+void Vector2D::set(double x, double y) {
+  _x = x;
+  _y = y;
+}
+
 std::string Vector2D::to_csv_row() const {
   std::ostringstream oss;
   oss << _label << ',' << std::setprecision(10) << _x << ',' << _y;
@@ -48,6 +53,6 @@ std::string Vector2D::to_csv_row() const {
 std::string Vector2D::to_csv_header() { return "label,x,y"; }
 
 std::ostream &operator<<(std::ostream &os, const Vector2D &v) {
-  os << "[" << v.label() << "] (" << v.x() << ", " << v.y() << ")";
+  os << "[" << v._label << "] (" << v._x << ", " << v._y << ")";
   return os;
 }
