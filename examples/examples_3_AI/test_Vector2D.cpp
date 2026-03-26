@@ -45,7 +45,8 @@ void run_unit_tests(int &failures) {
   {
     Vector2D a("a", 0.0, 0.0);
     Vector2D b("b", 3.0, 4.0);
-    expect(almost_equal(a.distance_to(b), 5.0), "distance_to computes Euclidean distance", failures);
+    expect(almost_equal(a.distance_to(b), 5.0),
+           "distance_to computes Euclidean distance", failures);
   }
 
   {
@@ -73,7 +74,8 @@ void run_unit_tests(int &failures) {
   }
 
   {
-    expect(Vector2D::to_csv_header() == "label,x,y", "to_csv_header format", failures);
+    expect(Vector2D::to_csv_header() == "label,x,y", "to_csv_header format",
+           failures);
 
     Vector2D v("csv", 1.25, -2.5);
     expect(v.to_csv_row() == "csv,1.25,-2.5", "to_csv_row format", failures);
@@ -91,7 +93,8 @@ void run_smoke_and_timing_test(int &failures) {
   vectors.reserve(100);
 
   for (int i = 0; i < 100; ++i) {
-    vectors.emplace_back("v" + std::to_string(i), static_cast<double>(i), static_cast<double>(i + 1));
+    vectors.emplace_back("v" + std::to_string(i), static_cast<double>(i),
+                         static_cast<double>(i + 1));
   }
 
   double norm_accumulator = 0.0;
@@ -103,14 +106,19 @@ void run_smoke_and_timing_test(int &failures) {
   }
 
   auto end = std::chrono::steady_clock::now();
-  auto elapsed_us = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+  auto elapsed_us =
+      std::chrono::duration_cast<std::chrono::microseconds>(end - start)
+          .count();
 
-  expect(vectors.size() == 100, "smoke: vector contains 100 elements", failures);
-  expect(norm_accumulator > 0.0, "smoke: accumulated norm is positive", failures);
+  expect(vectors.size() == 100, "smoke: vector contains 100 elements",
+         failures);
+  expect(norm_accumulator > 0.0, "smoke: accumulated norm is positive",
+         failures);
   expect(running_sum.x() > 0.0 && running_sum.y() > 0.0,
          "smoke: running sum uses vector values", failures);
 
-  std::cout << "[INFO] Smoke timing (100 Vector2D create+use): " << elapsed_us << " us\n";
+  std::cout << "[INFO] Smoke timing (100 Vector2D create+use): " << elapsed_us
+            << " us\n";
 
   expect(elapsed_us >= 0, "timing: elapsed time is non-negative", failures);
   expect(elapsed_us < 2'000'000,
