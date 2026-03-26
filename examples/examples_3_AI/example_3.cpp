@@ -27,7 +27,7 @@ int main() {
 
   std::cout << Vector2D::to_csv_header() << std::endl;
 
-  for (auto &element : esercizio) {
+  for (const auto &element : esercizio) {
     std::cout << element.to_csv_row() << std::endl;
   }
 
