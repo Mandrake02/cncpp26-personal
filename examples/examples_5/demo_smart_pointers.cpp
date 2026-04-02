@@ -1,7 +1,7 @@
 #include "demo_smart_pointers.h"
 #include <iostream>
-#include <string>
 #include <memory>
+#include <string>
 
 std::string *get_age() {
   std::string age = "18";
@@ -27,8 +27,8 @@ void demo_smart_pointers() {
   }
   double d = 10;
   std::cout << *d_ptr << " " << d << std::endl;
- 
-  //Heap allocation
+
+  // Heap allocation
   {
     d_ptr = new double;
   }
@@ -40,34 +40,34 @@ void demo_smart_pointers() {
     Tracker tracker("tracker_1");
   }
   {
-    Tracker* tracker = new Tracker("tracker");
+    Tracker *tracker = new Tracker("tracker");
   }
-  
+
   std::unique_ptr<Tracker> parent_ptr;
   {
     std::unique_ptr<Tracker> u_ptr = std::make_unique<Tracker>("unique_ptr");
     Tracker *raw_ptr = u_ptr.get();
-    //parent_ptr = u_ptr; //NOT ALLOWED; UNIQUE PTR MUST BE UNIQUE
+    // parent_ptr = u_ptr; //NOT ALLOWED; UNIQUE PTR MUST BE UNIQUE
     parent_ptr = std::move(u_ptr);
     std::cout << ">scope exit" << std::endl;
   }
-  
+
   std::shared_ptr<Tracker> shared_ptr;
   {
     std::shared_ptr<Tracker> s_ptr = std::make_shared<Tracker>("SHARED_PTR");
     shared_ptr = s_ptr;
     std::cout << "- scope exit" << std::endl;
   }
+  std::cout << shared_ptr.use_count() << std::endl;
+  shared_ptr = nullptr; // Here the object is deleted since the last variable.
+                        // holding the pointer is assigned to nullptr
 
-  std::cout << ">demo smart_pointer_scope_exit" <<std::endl;
-
+  std::cout << ">demo smart_pointer_scope_exit" << std::endl;
 }
 
 Tracker::Tracker(std::string name) {
   this->_name = name;
-  std::cout << "constructed " << _name <<std::endl;
+  std::cout << "constructed " << _name << std::endl;
 }
 
-Tracker::~Tracker() {
-  std::cout << "destructed " << _name << std::endl;
-}
+Tracker::~Tracker() { std::cout << "destructed " << _name << std::endl; }
