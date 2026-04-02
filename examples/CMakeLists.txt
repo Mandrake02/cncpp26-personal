@@ -33,6 +33,7 @@ create_example(examples_2 SRCS test.cpp)
 create_example(try_it_yourself SRCS main.cpp vector2D.cpp)
 create_example(examples_3_AI SRCS example_3.cpp Vector2D.cpp)
 create_example(examples_4 SRCS example_4.cpp)
+create_example(examples_5 SRCS example_5.cpp demo_smart_pointers.cpp)
 
 add_executable(test_examples_3_AI
   ${CMAKE_CURRENT_LIST_DIR}/examples_3_AI/test_Vector2D.cpp

@@ -81,12 +81,16 @@ void break_code() {
     std::cout << *x_ptr << std::endl;
   }
   std::cout << "-----" << std::endl;
-  // std::string *age_ptr = get_age();
-  // std::cout << age_ptr << std::endl;
-  // if (age_ptr) {
-  //   std::cout << "age from get_age: " << *age_ptr << std::endl;
-  //   *age_ptr = "AA";
-  // }
+
+  //This will crash
+  std::string *age_ptr = get_age();
+  std::cout << age_ptr << std::endl;
+  if (age_ptr) {
+    std::cout << "age from get_age: " << *age_ptr << std::endl;
+    *age_ptr = "AA";
+  }
+
+  //This will crash
   std::cout << get_name() << std::endl;
   std::string &name = get_name();
   name = "ploto";
