@@ -83,6 +83,8 @@ FetchContent_Declare(mosquitto
   GIT_TAG v2.0.20
 )
 
+FetchContent_MakeAvailable(fmt rang json yaml-cpp mosquitto)
+
 message(STATUS "Dependencies fetched.")
 
 include_directories(
