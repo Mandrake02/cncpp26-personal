@@ -23,6 +23,36 @@ void Model::step(double dt, Vec inputs) {
     _states[i] = _states[i] + dt * x_dot[i];
   }
   _t += dt;
+  csv_row(_log_file);
+}
+
+bool Model::start_log (std::string path) {
+  std::string filename = path + "/" + _name + ".csv";
+  _log_file.open(filename);
+  if(_log_file.is_open()) {
+    csv_header(_log_file);
+  }
+  return _log_file.is_open();
+}
+  
+void Model::stop_log() {
+  _log_file.close();
+}
+
+void Model::csv_header(std::ostream &out) {
+  out << "t";
+  for(size_t i = 0; i < _n_states; i++) {
+    out << "," << "x" << i;
+  }
+  out << "\n";
+}
+
+void Model::csv_row(std::ostream &out) {
+  out << _t;
+  for(size_t i = 0; i < _n_states; i++) {
+    out << "," << _states[i];
+  }
+  out << "\n";
 }
 
 Vec Model::compute_x_dot(double dt, Vec inputs, Vec states) {

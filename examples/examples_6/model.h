@@ -13,6 +13,13 @@ public:
   void set_x0(Vec initial_states);
   void step(double dt, Vec inputs);
 
+  bool start_log (std::string path);
+  void stop_log();
+
+  void csv_header(std::ostream &out);
+  void csv_row(std::ostream &out);
+
+
 protected:
   std::string _name;
 
