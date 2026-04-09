@@ -15,6 +15,15 @@ int main() {
   Spring spring("spring", 100.0, 3.0);
   ForcedSpring fspring_1("constant_force", 100.0, 3.0);
   ForcedSpring fspring_2("sinusoidal_force", 100.0, 3.0);
+  try {
+    spring.load_config("./examples/examples_6/configs/");
+  } 
+  catch(std::exception &e) {
+    std::cout << rang::fg::red << e.what() << rang::fg::reset << std::endl;
+  }
+
+  fspring_1.load_config("./examples/examples_6/configs/");
+  fspring_2.load_config("./examples/examples_6/configs/"); 
 
   spring.start_log("./examples/examples_6/out/");
   fspring_1.start_log("./examples/examples_6/out/");
@@ -32,7 +41,7 @@ int main() {
     fspring_1.step(dt, {1.0});
     fspring_2.step(dt, {1.0 + std::sin(t * 2 + M_PI * 10.0)});
 
-    spring.csv_row(std::cout);
+    //spring.csv_row(std::cout);
   }
   return 0;
 }

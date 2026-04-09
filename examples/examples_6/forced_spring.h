@@ -4,6 +4,7 @@
 
 class ForcedSpring : public Model {
 public:
+  ForcedSpring(std::string name);
   ForcedSpring(std::string name, double k, double m);
 
   enum States {

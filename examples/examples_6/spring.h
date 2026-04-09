@@ -4,6 +4,7 @@
 
 class Spring : public Model {
 public:
+  Spring(std::string name);
   Spring(std::string name, double k, double m);
   ~Spring();
   

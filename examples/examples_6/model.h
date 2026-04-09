@@ -4,6 +4,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <map>
 
 class Model {
 public:
@@ -19,12 +20,18 @@ public:
   void csv_header(std::ostream &out);
   void csv_row(std::ostream &out);
 
+  bool load_config(std::string path);
+  bool save_config(std::string path);
+
 
 protected:
   std::string _name;
 
   virtual Vec compute_x_dot_impl(double dt, Vec inputs, Vec states) = 0;
 
+  virtual bool set_config(std::map<std::string, double> config);
+
+  virtual Str2Dbl get_config() const;
 
 private:
   Vec compute_x_dot(double dt, Vec inputs, Vec states);

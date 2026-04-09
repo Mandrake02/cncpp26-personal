@@ -1,6 +1,7 @@
 #include "spring.h"
 
 Spring::Spring(std::string name, double k, double m) : Model(name, STATES_NUMBER, INPUTS_NUMBER), _k(k), _m(m) {}
+Spring::Spring(std::string name) : Model(name, STATES_NUMBER, INPUTS_NUMBER), _k(100.0), _m(3.0) {}
 
 Spring::~Spring() {}
 
