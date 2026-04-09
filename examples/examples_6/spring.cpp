@@ -14,3 +14,29 @@ Vec Spring::compute_x_dot_impl(double dt, Vec inputs, Vec states) {
 
   return x_dot;
 }
+
+bool Spring::set_config(Str2Dbl config) {
+  bool flag = true;
+  if(config.find("k") != config.end()) {
+    _k = config["k"];
+  } 
+  else {
+    std::cout << "Key k was not found" << std::endl;
+    flag = false;
+  }
+  if(config.find("m") != config.end()) {
+    _m = config["m"];
+  } 
+  else {
+    std::cout << "Key m was not found" << std::endl;
+    flag = false;
+  }
+  return flag;
+}
+
+std::optional<Str2Dbl> Spring::get_config() const {
+  return{
+      {"k", _k},
+      {"m", _m},
+    };
+}

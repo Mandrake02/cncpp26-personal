@@ -14,6 +14,8 @@ public:
   void set_x0(Vec initial_states);
   void step(double dt, Vec inputs);
 
+  //void step(double dt, Vec inputs, std::function<void (double dt Vec states, Vec x_dot)> integrator);
+
   bool start_log (std::string path);
   void stop_log();
 
@@ -29,9 +31,9 @@ protected:
 
   virtual Vec compute_x_dot_impl(double dt, Vec inputs, Vec states) = 0;
 
-  virtual bool set_config(std::map<std::string, double> config);
+  virtual bool set_config(Str2Dbl config);
 
-  virtual Str2Dbl get_config() const;
+  virtual std::optional<Str2Dbl> get_config() const;
 
 private:
   Vec compute_x_dot(double dt, Vec inputs, Vec states);

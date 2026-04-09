@@ -1,5 +1,12 @@
 #include "model.h"
 #include <exception>
+#include <optional>
+
+std::string trim (std::string str) {
+  str.erase(0, str.find_first_not_of(" "));
+  str.erase(0, str.find_last_not_of(" "));
+  return str;
+}
 
 Model::Model(std::string name, size_t n_states, size_t n_inputs)
     : _name(name), _n_inputs(n_inputs), _n_states(n_states) 
@@ -77,6 +84,9 @@ bool Model::load_config(std::string path) {
     std::string key = line.substr(0, pos);
     std::string value_str = line.substr(pos + 1);
 
+    key = trim(key);
+    value_str = trim(value_str);
+    
     double value = std::stod(value_str);
     
     config[key] = value;
@@ -90,17 +100,22 @@ bool Model::load_config(std::string path) {
 }
 
 bool Model::save_config(std::string path) {
+  auto maybe_config = get_config();
+  if(!maybe_config) {
+    return false;
+  }
   std::string file_name = path + "/" + _name + ".txt";
   std::ofstream config_file(file_name);
   if(!config_file.is_open()) {
     throw std::runtime_error("Error opening file!" + file_name);
     return false;
   }
-  Str2Dbl config = get_config();
+  
   // for(const auto &element : config) {}
-  for (const auto &[key, value] : config) {
+  for (const auto &[key, value] : maybe_config.value()) {
     config_file << key << " = " << value << "\n";
   }
+
   config_file.close();
   return true;
 }
@@ -109,7 +124,7 @@ bool Model::set_config(Str2Dbl config) {
   return true;
 }
 
-Str2Dbl Model::get_config() const {
+std::optional<Str2Dbl> Model::get_config() const {
   return {};
 }
 
