@@ -35,7 +35,7 @@ bool Spring::set_config(Str2Dbl config) {
 }
 
 std::optional<Str2Dbl> Spring::get_config() const {
-  return{
+  return Str2Dbl{
       {"k", _k},
       {"m", _m},
     };

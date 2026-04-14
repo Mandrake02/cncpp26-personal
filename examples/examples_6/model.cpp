@@ -4,7 +4,7 @@
 
 std::string trim (std::string str) {
   str.erase(0, str.find_first_not_of(" "));
-  str.erase(0, str.find_last_not_of(" "));
+  str.erase(str.find_last_not_of(" ") + 1);
   return str;
 }
 
@@ -31,6 +31,16 @@ void Model::step(double dt, Vec inputs) {
   }
   _t += dt;
   csv_row(_log_file);
+}
+
+void Model::step(double dt, Vec inputs, std::function<void(double dt, Vec states, Vec x_dot)> integrator) {
+  Vec x_dot = compute_x_dot(dt, inputs, _states);
+
+    integrator(dt, _states, x_dot);
+
+    _t += dt;
+    // Log current states
+    log();
 }
 
 bool Model::start_log (std::string path) {
@@ -136,4 +146,11 @@ Vec Model::compute_x_dot(double dt, Vec inputs, Vec states) {
     throw std::invalid_argument("Invalid input sizes");
   }
   return compute_x_dot_impl(dt, inputs, states);
+}
+
+void Model::log() {
+  // If the file is open (then the logging is enabled).
+  if (_log_file.is_open()) {
+    csv_row(_log_file);
+  }
 }

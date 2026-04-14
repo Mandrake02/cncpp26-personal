@@ -13,6 +13,7 @@ public:
 
   void set_x0(Vec initial_states);
   void step(double dt, Vec inputs);
+  void step(double dt, Vec inputs, std::function<void(double dt, Vec states, Vec x_dot)> integrator);
 
   //void step(double dt, Vec inputs, std::function<void (double dt Vec states, Vec x_dot)> integrator);
 
@@ -37,6 +38,7 @@ protected:
 
 private:
   Vec compute_x_dot(double dt, Vec inputs, Vec states);
+  void log();
 
   size_t _n_states;
   size_t _n_inputs;

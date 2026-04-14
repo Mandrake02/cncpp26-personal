@@ -64,7 +64,7 @@ int main(int argc, char* argv[]) {
   vec.front();
   vec.back();
   vec.size();
-  vec.empty();
+  //vec.empty();
 
   Vec vec2 = {
     0, 
@@ -80,7 +80,7 @@ int main(int argc, char* argv[]) {
     double y;
   };
   std::vector<Point> points;
-  // std::sort(points.begin(), points.end()); DOESN'T WORK
+  //std::sort(points.begin(), points.end()); //DOESN'T WORK
   std::sort(points.begin(), points.end(), [](Point a, Point b) -> bool {return a.x < b.x;});
   std::sort(points.begin(), points.end(), [](Point a, Point b) -> bool {return std::hypot(a.x, a.y) < std::hypot(b.x, b.y);});
   Point p0 = {10, 10};
@@ -123,7 +123,17 @@ int main(int argc, char* argv[]) {
     //    }
     //  });
 
+    fspring_2.step(dt, {1.0 + std::sin(t * 2 * M_PI * 10.0)},
+                   [](double dt, Vec states, Vec x_dot) {
+                     for (size_t i = 0; i < states.size(); i++) {
+                       states[i] = states[i] + dt * x_dot[i];
+                     }
+                   });
+    
     //spring.csv_row(std::cout);
   }
+
+  std::cout << rang::fg::green << "Simulation finished" << rang::fg::reset
+            << std::endl;
   return 0;
 }
