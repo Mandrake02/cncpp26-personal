@@ -1,24 +1,31 @@
+/*
+Point class
+*/
+
 #include "point.hpp"
-#include <sstream>
 #include <cmath>
+#include <unistd.h>
+#include <fmt/color.h>
 #include <fmt/format.h>
 #include <fmt/ranges.h>
-#include <fmt/color.h>
+#include <sstream>
+#include <iostream>
 
 using namespace std;
 using namespace cncpp;
 using namespace fmt;
 using col_t = optional<color>;
 
-//LOCAL FUNCTIONS DECLARATION
-static string coord_str(opt_data_t const &coord, col_t const &color = nullopt); 
+static string coord_str(opt_data_t const &coord, col_t const &color = nullopt);
 
-//LIFECYCLE
+// LIFECYCLE
 Point::Point(opt_data_t x, opt_data_t y, opt_data_t z) : _x(x), _y(y), _z(z) {}
 
-string Point::desc(bool colored) const{
+string Point::desc(bool colored) const {
   stringstream ss;
-  ss << "[" << coord_str(_x, col_t(color::red)) << ", " << coord_str(_y, col_t(color::green)) << ", " << coord_str(_z, col_t(color::blue)) << "]";
+  ss << "[" << coord_str(_x, colored ? col_t(color::red) : nullopt) << ", "
+     << coord_str(_y, colored ? col_t(color::green) : nullopt) << ", "
+     << coord_str(_z, colored ? col_t(color::blue) : nullopt) << "]";
   return ss.str();
 }
 
@@ -28,26 +35,30 @@ void Point::reset() {
   _z.reset();
 }
 
-//OPERATORS/OPERATIONS
+// OPERATORS/OPERATIONS
 Point Point::delta(Point const &o) const {
-  if(!this->is_complete() || !o.is_complete()) {
+  if (!is_complete() || !o.is_complete()) {
     throw runtime_error("Points are not complete, can't do delta");
   }
-  Point out(_x.value() - o._x.value(), _y.value() - o._y.value(), _z.value() - o._z.value());
+  Point out(_x.value() - o._x.value(), _y.value() - o._y.value(),
+            _z.value() - o._z.value());
   return out;
 }
 
 data_t Point::length() const {
-  if(!this->is_complete()) {
+  if (!is_complete()) {
     throw runtime_error("Point is not complete, can't compute length");
   }
   return hypot(_x.value(), _y.value(), _z.value());
 }
 
 void Point::modal(Point const &o) {
-  if(o._x && !_x) {_x = o._x;}
-  if(o._y && !_y) {_y = o._x;}
-  if(o._z && !_z) {_z = o._z;}
+  if (o._x && !_x)
+    _x = o._x;
+  if (o._y && !_y)
+    _y = o._y;
+  if (o._z && !_z)
+    _z = o._z;
 }
 
 Point &Point::operator=(Point const &o) {
@@ -58,30 +69,61 @@ Point &Point::operator=(Point const &o) {
 }
 
 Point Point::operator+(Point const &o) const {
-  if(!this->is_complete() || !o.is_complete()) {
-    throw runtime_error("Points are not complete, can't compute sum");
+  if (!is_complete() || !o.is_complete()) {
+    throw runtime_error("Points are not complete, can't do the sum");
   }
-  Point out (_x.value() + o._x.value(), _y.value() + o._y.value(), _z.value() + o._z.value());
+  Point out(_x.value() + o._x.value(), _y.value() + o._y.value(),
+            _z.value() + o._z.value());
   return out;
 }
 
+// ACCESSORS
 
-//ACCESSOR
-vector<data_t> Point::vec() const {
-
+std::vector<data_t> Point::vec() const {
+  if (!is_complete()) {
+    throw runtime_error("Point is not complete, can't convert to vector");
+  }
+  return {_x.value(), _y.value(), _z.value()};
 }
 
-//LOCAL FUNCTION DEFINITION
+// UTILITY FUNCTIONS
+
 static string coord_str(opt_data_t const &coord, col_t const &color) {
   string str;
-  if(coord && color) {
-    str = format( "{:" CNCPP_NUMBER_WIDTH ".3f}", styled(coord.value(), fg(color.value())) );
-  }
-  else if(coord) {
-    str = format( "{:" CNCPP_NUMBER_WIDTH ".3f}", coord.value());
-  }
-  else {
-    str = format("{:>" CNCPP_NUMBER_WIDTH "}", "-"); 
+  if (coord && color) {
+    str = format("{:" CNCPP_NUMBERS_WIDTH "." CNCPP_NUMBERS_PRECISION "f}",
+                 styled(coord.value(), fg(color.value())));
+  } else if (coord) {
+    str = format("{:" CNCPP_NUMBERS_WIDTH "." CNCPP_NUMBERS_PRECISION "f}", coord.value());
+  } else {
+    str = format("{:>" CNCPP_NUMBERS_WIDTH "}", "-");
   }
   return str;
 }
+
+std::ostream &cncpp::operator<<(std::ostream &os, const Point &v) {
+  bool is_terminal = (&os == &std::cout && isatty(STDOUT_FILENO)) ||
+                     (&os == &std::cerr && isatty(STDERR_FILENO));
+  os << v.desc(is_terminal);
+  return os;
+}
+
+
+#ifdef CNCPP_TEST_MAIN
+#include <iostream>
+
+int main() {
+  Point p1(1.0, 2.0, 3.0);
+  cout << "p1: " << p1 << endl;
+  Point p2(4.0, 5.0);
+  cout << "p2: " << p2 << endl;
+  p2.modal(p1);
+  cout << "p2 after modal with p1: " << p2 << endl;
+  Point p3 = p1 + p2;
+  cout << "p3 (p1 + p2): " << p3 << endl;
+  cout << "p3 length: " << p3.length() << endl;
+  cerr << "p3 delta p1: " << p3.delta(p1) << endl;
+  return 0;
+}
+
+#endif // CNCPP_TEST_MAIN

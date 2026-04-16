@@ -15,7 +15,8 @@ Author: Andrea Malacarne, 2026
                               //Minor version changed when changing some user interface that could break something previous
                               //Major version changed when changing A LOT -> features and user interface
 
-#define CNCPP_NUMBER_WIDTH "9"                              
+#define CNCPP_NUMBERS_WIDTH "9"
+#define CNCPP_NUMBERS_PRECISION "3"
 
 using data_t = double; //Type for data value -> userful to change if the pc we're using is not strong enough
                        //If we want to change all from double -> float we just need to change this line of code

@@ -29,6 +29,8 @@ set(MAIN_DIR ${SRC_DIR}/main)
 
 set(CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_LIST_DIR}/usr CACHE PATH "Install path prefix" FORCE)
 
+include(CTest)
+
 message(STATUS "SRC_DIR: ${SRC_DIR}")
 message(STATUS "MAIN_DIR: ${MAIN_DIR}")
 message(STATUS "CMAKE_INSTALL_PREFIX: ${CMAKE_INSTALL_PREFIX}")
@@ -47,9 +49,8 @@ include(FetchContent)
 message(STATUS "Fetching dependencies...")
 
 FetchContent_Declare(json
-  GIT_REPOSITORY https://github.com/nlohmann/json.git
-  GIT_TAG        HEAD
-  GIT_SHALLOW    TRUE
+  URL https://github.com/nlohmann/json/releases/download/v3.11.3/json.tar.xz
+  DOWNLOAD_EXTRACT_TIMESTAMP TRUE
 )
 
 FetchContent_Declare(fmt
@@ -69,6 +70,7 @@ FetchContent_Declare(yaml-cpp
   GIT_SHALLOW    TRUE
   GIT_TAG HEAD
 )
+
 
 set(DOCUMENTATION OFF CACHE BOOL "")
 set(INC_BRIDGE_SUPPORT OFF CACHE BOOL "")
@@ -128,6 +130,15 @@ add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/examples)
 file(GLOB SRC_FILES ${SRC_DIR}/*.cpp)
 file(GLOB HEADERS ${SRC_DIR}/*.hpp)
 
+add_library(cncpp STATIC ${SRC_FILES})
+target_include_directories(cncpp PUBLIC ${SRC_DIR})
+target_link_libraries(cncpp PUBLIC fmt::fmt)
+
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/tests)
+
+add_executable(point_test ${SRC_DIR}/point.cpp)
+target_compile_definitions(point_test PRIVATE CNCPP_TEST_MAIN)
+target_link_libraries(point_test PRIVATE cncpp fmt::fmt)
 
 #   ___           _        _ _
 #  |_ _|_ __  ___| |_ __ _| | |
