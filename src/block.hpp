@@ -10,10 +10,13 @@
 namespace cncpp {
 
 class Machine{
-
+  public:
+  Point zero() const {Point(0,0,0);}
+  data_t tq() const {return 0.001;}
+  data_t A() const {return 1000;}
 };
 
-class Block{
+class Block : public Object{
 public:
 
   enum class BlockType {
@@ -80,7 +83,7 @@ private:
   Point _delta=Point();
   data_t _length=0;
   data_t _i=0, _j=0, _r=0; //arc parameter
-  data_t _theta_0=0, d_theta=0; 
+  data_t _theta_0=0, _dtheta=0; 
   data_t _feedrate=0; //feedrate
   data_t _arc_feedrate=0; //feedrate along the rate
   data_t _spindle=0; 
@@ -92,8 +95,11 @@ private:
   bool _parsed = false;
   Machine const *_machine = nullptr;
 
+  //UTILITIES
   bool parse_token(std::string &token);
-
+  Point start_point();
+  void compute();
+  void calc_arc();
 };
 }//namespace ncpp
 

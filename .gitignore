@@ -5,3 +5,6 @@ usr/
 .Rproj.user
 
 .vscode
+out/
+
+doc/html

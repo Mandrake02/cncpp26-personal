@@ -8,6 +8,10 @@ Author: Andrea Malacarne, 2026
 #define DEFINES_HPP
 
 #include <optional>
+#include <string>
+#include <iostream>
+#include <unistd.h>
+#include <iostream>
 
 // Semantic versioning
 #define CNCPP_VERSION "0.1.0" //Major.Minor.Patch version
@@ -24,7 +28,19 @@ using data_t = double; //Type for data value -> userful to change if the pc we'r
 using opt_data_t = std::optional<data_t>; //We will need it for optional values
 using opt_int_t = std::optional<int>;
 
+namespace cncpp{
 
-
+class Object{
+public:
+  virtual std::string desc(bool colored = true) = 0;
+  friend std::ostream &operator<<(std::ostream &os, const Object &v);
+};
+std::ostream &cncpp::operator<<(std::ostream &os, const Object &v) {
+  bool is_terminal = (&os == &std::cout && isatty(STDOUT_FILENO)) ||
+                     (&os == &std::cerr && isatty(STDERR_FILENO));
+  os << v.desc(is_terminal);
+  return os;
+} //namespace cncpp
+}
 
 #endif
