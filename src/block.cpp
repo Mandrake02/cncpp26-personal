@@ -14,7 +14,7 @@ Block::Block(string line, Block &prev) : Block(line) {
   (*this) = prev;
 }
 Block::~Block() {
-  cerr << "Block " << _line << "destroyed." <<endl;
+  cerr << "Block " << _line << " destroyed." <<endl;
 }
 
 string Block::desc(bool colored) const {
@@ -187,7 +187,7 @@ data_t Block::Profile::lambda(data_t t, data_t &s) {
   }
   else if(t < dt_1 + dt_m + dt_2) {
     data_t t_2 = dt_1 + dt_m;
-    r = f * dt_1 / 2.0 + f * (dt_m + t - t_2) + d / 2.0 * pow(t, 2) + pow(t_2, 2) - d * t * t_2;
+    r = f * dt_1 / 2.0 + f * (dt_m + t - t_2) + d / 2.0 * (pow(t, 2) + pow(t_2, 2)) - d * t * t_2;
     s = f + d * (t-t_2);
     current_acc = d;
   }
@@ -353,11 +353,19 @@ void Block::calc_arc() {
 #include <iostream>
 
 int main() {
-  Block b1 = Block("N01 G00 X100 Y100 z200");
-  Block b2 = Block("N02 G00 Z150", b1);
-  Block b3 = Block("n03 G01 x50 y20 T1 f5000 s200");
+  Machine m{};
 
-  cout << b1 << endl << b2 << endl << b3 <<endl;
+  Block b1{"N01 G00 X100 Y100 z200"};
+  Block b2{"N02 G00 Z150", b1.parse(&m)};
+  Block b3{"n03 G01 x50 y20 T1 f5000 s200 M3", b2.parse(&m)};
+  b3.parse(&m);
+  cerr << b1 << endl << b2 << endl << b3 <<endl;
+
+  cout << "t,lambda,s,x,y,z" << endl;
+  b3.walk([&](Block &b, data_t t, data_t l, data_t s) {
+    Point pos = b.interpolate(l);
+    cout << fmt::format("{:},{:},{:},{:},{:},{:}", t, l, s, pos.x(), pos.y(), pos.z()) << endl;
+  });
 }
 
 #endif // CNCPP_TEST_BLOCK
