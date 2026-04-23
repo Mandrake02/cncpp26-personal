@@ -17,8 +17,8 @@ Block::~Block() {
   cerr << "Block " << _line << "destroyed." <<endl;
 }
 
-string Block::desc(bool colored = true) {
-  if(!parsed) {
+string Block::desc(bool colored) const {
+  if(!_parsed) {
     throw runtime_error("Not parsed yet");
   }
   stringstream ss;
@@ -59,6 +59,7 @@ Block &Block::operator=(Block &b) {
   _target.reset();
   prev = &b;
   b.next = this;
+  return *this;
 }
 
 //OPERATION/OPERATORS
@@ -148,6 +149,7 @@ Point Block::interpolate(data_t lambda) {
 
 Point Block::interpolate(data_t time, data_t &lambda, data_t &speed) {
   lambda = this->lambda(time, speed);
+  return interpolate(lambda);
 }
 
 //b.walk ([&](Block &b, data_t t, data_t l, data_t s) {
@@ -162,6 +164,41 @@ void Block::walk(std::function<void(Block &b, data_t t, data_t l, data_t s)> fun
     func(*this, t, l, s);
     t += _machine->tq();
   }
+}
+
+//PROFILE STRUCT METHOD
+
+data_t Block::Profile::lambda(data_t t, data_t &s) {
+  data_t r;
+  current_acc = 0;
+  if(t < 0) {
+    r = 0.0;
+    s = 0.0;
+  } 
+  else if(t < dt_1) {
+    r = a * pow(t, 2) / 2.0;
+    s = a * t;
+    current_acc = a;
+  }
+  else if(t < dt_1 + dt_m) {
+    r = f * (dt_1 / 2.0 + (t - dt_1));
+    s = f;
+    current_acc = 0.0;
+  }
+  else if(t < dt_1 + dt_m + dt_2) {
+    data_t t_2 = dt_1 + dt_m;
+    r = f * dt_1 / 2.0 + f * (dt_m + t - t_2) + d / 2.0 * pow(t, 2) + pow(t_2, 2) - d * t * t_2;
+    s = f + d * (t-t_2);
+    current_acc = d;
+  }
+  else {
+    r = l;
+    s = 0.0;
+  }
+
+  r /= l;
+  s *= 60;
+  return r;
 }
 
 //PRIVATE MEMBER 
@@ -229,9 +266,98 @@ Point Block::start_point() {
 }
 
 void Block::compute() {
+  data_t dt, dt_1, dt_m, dt_2, dq;
+  data_t f_m, &l = _length;
+  data_t &A = _acc, a, d;
 
+  f_m = _arc_feedrate / 60.0;
+  dt_1 = f_m / A;
+  dt_2 = dt_1;
+  dt_m = l / f_m - (dt_1 + dt_2) / 2.0;
+
+  if (dt_m > 0) { // long block, trapezoid
+    dt = _machine->quantize(dt_1 + dt_m + dt_2, dq);
+    dt_m = dt_m + dq;
+    f_m = (2 * l) / (dt_1 + dt_2 + 2 * dt_m);
+  } else { // short block, trinagle
+    dt_1 = dt_2 = sqrt(l / A);
+    dt = _machine->quantize(dt_1 + dt_2, dq);
+    dt_m = 0;
+    dt_2 = dt_2 + dq;
+    f_m = 2 * l / (dt_1 + dt_2);
+  }
+  a = f_m / dt_1;
+  d = -(f_m / dt_2);
+  _profile.dt_1 = dt_1;
+  _profile.dt_2 = dt_2;
+  _profile.dt_m = dt_m;
+  _profile.a = a;
+  _profile.d = d;
+  _profile.f = f_m;
+  _profile.dt = dt;
+  _profile.l = l;
 }
 
 void Block::calc_arc() {
+  data_t x0, y0, z0, xc, yc, xf, yf, zf;
+  Point p0 = start_point();
+  x0 = p0.x();
+  y0 = p0.y();
+  z0 = p0.z();
+  xf = _target.x();
+  yf = _target.y();
+  zf = _target.z();
 
+  if (_r) { // if the radius is given
+    data_t dx = _delta.x();
+    data_t dy = _delta.y();
+    data_t dxy2 = pow(dx, 2) + pow(dy, 2);
+    data_t sq = sqrt(-pow(dy, 2) * dxy2 * (dxy2 - 4 * _r * _r));
+    // signs table
+    // sign(r) | CW(-1) | CCW(+1)
+    // --------------------------
+    //      -1 |     +  |    -
+    //      +1 |     -  |    +
+    int s = (_r > 0) - (_r < 0);
+    s *= (_type == BlockType::CCWA ? 1 : -1);
+    xc = x0 + (dx - s * sq / dxy2) / 2.0;
+    yc = y0 + dy / 2.0 + s * (dx * sq) / (2 * dy * dxy2);
+  } else { // if I,J are given
+    data_t r2;
+    _r = hypot(_i, _j);
+    xc = x0 + _i;
+    yc = y0 + _j;
+    r2 = hypot(xf - xc, yf - yc);
+    if (fabs(_r - r2) > _machine->error()) {
+      throw runtime_error(
+          fmt::format("Arc endpoints mismatch error ({:})", _r - r2).c_str());
+    }
+  }
+  _center.x(xc);
+  _center.y(yc);
+  _theta_0 = atan2(y0 - yc, x0 - xc);
+  _dtheta = atan2(yf - yc, xf - xc) - _theta_0;
+  // we need the net angle so we take the 2PI complement if negative
+  if (_dtheta < 0)
+    _dtheta = 2 * M_PI + _dtheta;
+  // if CW, take the negative complement
+  if (_type == BlockType::CWA)
+    _dtheta = -(2 * M_PI - _dtheta);
+  //
+  _length = hypot(zf - z0, _dtheta * _r);
+  // from now on, it's safer to drop the sign of radius angle
+  _r = fabs(_r);
 }
+
+#ifdef CNCPP_TEST_BLOCK
+#include <iostream>
+
+int main() {
+  Block b1 = Block("N01 G00 X100 Y100 z200");
+  Block b2 = Block("N02 G00 Z150", b1);
+  Block b3 = Block("n03 G01 x50 y20 T1 f5000 s200");
+
+  cout << b1 << endl << b2 << endl << b3 <<endl;
+}
+
+#endif // CNCPP_TEST_BLOCK

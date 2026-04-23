@@ -39,7 +39,7 @@ public:
    * @param colored If true, use terminal color formatting for coordinates.
    * @return Formatted string representation in the form [x, y, z].
    */
-  std::string desc(bool colored = true) const;
+  std::string desc(bool colored = true) const override;
 
   /**
    * @brief Resets all coordinates to an unset state.
@@ -144,14 +144,6 @@ public:
    */
   std::vector<data_t> vec() const;
 
-  /**
-   * @brief Streams a formatted representation of a point.
-   * @param os Output stream.
-   * @param v Point to print.
-   * @return Reference to the output stream.
-   */
-  friend 
-  std::ostream &operator<<(std::ostream &os, const Point &v);
 
 private:
   opt_data_t _x = std::nullopt;

@@ -10,10 +10,19 @@
 namespace cncpp {
 
 class Machine{
-  public:
-  Point zero() const {Point(0,0,0);}
-  data_t tq() const {return 0.001;}
+public:
+  Point zero() const {return Point(0,0,0);}
+  data_t tq() const {return _tq;}
   data_t A() const {return 1000;}
+  data_t error() const {return 1e-3;}
+  data_t quantize(data_t t, data_t &dq) const {
+    data_t q;
+    q = static_cast<size_t>((t/_tq)+1) * _tq;
+    dq = q-t;
+    return q;
+  } 
+private:
+  data_t _tq = 0.001;
 };
 
 class Block : public Object{
@@ -43,7 +52,7 @@ public:
   Block(std::string line, Block &prev);
   ~Block();
 
-  std::string desc(bool colored = true);
+  std::string desc(bool colored = true) const override; 
   Block &operator=(Block &b);
 
   //OPERATION/OPERATORS

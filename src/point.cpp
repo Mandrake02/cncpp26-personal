@@ -102,7 +102,7 @@ static string coord_str(opt_data_t const &coord, col_t const &color) {
 }
 
 
-#ifdef CNCPP_TEST_MAIN
+#ifdef CNCPP_TEST_POINT
 #include <iostream>
 
 int main() {
@@ -119,4 +119,4 @@ int main() {
   return 0;
 }
 
-#endif // CNCPP_TEST_MAIN
+#endif // CNCPP_TEST_POINT
