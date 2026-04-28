@@ -8,6 +8,8 @@
 
 namespace cncpp {
 
+using iterator = std::list<cncpp::Block>::iterator;
+
 class Program : public Object, public std::list<Block> {
 public:
   //LIFECYCLE

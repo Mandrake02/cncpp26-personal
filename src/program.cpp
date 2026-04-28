@@ -16,7 +16,7 @@ Program::Program(Machine *m) : _machine(m) {}
 
 Program::~Program() {}
 
-std::string Program::desc(bool colored = true) const {
+std::string Program::desc(bool colored) const {
 
 }
 
@@ -32,7 +32,7 @@ void Program::load(const string &filename, bool append) {
   }
   
   if(!append) {
-    reset;
+    reset();
   }
   
   string line;

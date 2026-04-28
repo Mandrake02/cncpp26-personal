@@ -28,7 +28,6 @@ using data_t = double; //Type for data value -> userful to change if the pc we'r
 
 using opt_data_t = std::optional<data_t>; //We will need it for optional values
 using opt_int_t = std::optional<int>;
-using iterator = std::list<Block>::iterator;
 
 namespace cncpp{
 
