@@ -9,6 +9,7 @@ project(CNCpp VERSION ${VERSION} LANGUAGES CXX)
 #  |____/ \___|\__|   \_/ \__,_|_|  |___/
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+set(CMAKE_POLICY_VERSION_MINIMUM 3.5)
 
 if(CMAKE_BUILD_TYPE STREQUAL "")
   set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "Choose the type of build." FORCE)
@@ -35,6 +36,7 @@ message(STATUS "SRC_DIR: ${SRC_DIR}")
 message(STATUS "MAIN_DIR: ${MAIN_DIR}")
 message(STATUS "CMAKE_INSTALL_PREFIX: ${CMAKE_INSTALL_PREFIX}")
 file(GLOB SRC_FILES ${SRC_DIR}/*.cpp)
+list(FILTER SRC_FILES EXCLUDE REGEX ".*/_.*\\.cpp$")
 
 
 #   _____         _   ____            _
@@ -71,22 +73,7 @@ FetchContent_Declare(yaml-cpp
   GIT_TAG HEAD
 )
 
-
-set(DOCUMENTATION OFF CACHE BOOL "")
-set(INC_BRIDGE_SUPPORT OFF CACHE BOOL "")
-set(WITH_APPS OFF CACHE BOOL "")
-set(WITH_CLIENTS OFF CACHE BOOL "")
-set(WITH_PIC ON CACHE BOOL "")
-set(WITH_STATIC_LIBRARIES ON CACHE BOOL "")
-set(WITH_TLS OFF CACHE BOOL "")
-set(WITH_LIB_CPP ON CACHE BOOL "")
-FetchContent_Declare(mosquitto
-  GIT_REPOSITORY https://github.com/eclipse-mosquitto/mosquitto.git
-  GIT_SHALLOW    TRUE
-  GIT_TAG v2.0.20
-)
-
-FetchContent_MakeAvailable(fmt rang json yaml-cpp mosquitto)
+FetchContent_MakeAvailable(fmt rang json yaml-cpp)
 
 message(STATUS "Dependencies fetched.")
 
@@ -95,14 +82,7 @@ include_directories(
   ${rang_SOURCE_DIR}/include
   ${json_SOURCE_DIR}/include
   ${yaml-cpp_SOURCE_DIR}/include
-  ${mosquitto_SOURCE_DIR}/include
-  ${mosquitto_SOURCE_DIR}/lib/cpp
   # /opt/homebrew/include
-)
-
-link_directories(
-  ${mosquitto_BINARY_DIR}/lib
-  ${mosquitto_BINARY_DIR}/lib/cpp
 )
 
 #    ____             __ _                          _    __ _ _
@@ -119,7 +99,7 @@ link_directories(
 
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/examples)
 
-#  ____                       _             _        _   _
+#  ____                                        _        _   _
 # |  _ \  ___   ___ _   _ _ __ ___   ___ _ __ | |_ __ _| |_(_) ___  _ __
 # | | | |/ _ \ / __| | | | '_ ` _ \ / _ \ '_ \| __/ _` | __| |/ _ \| '_ \
 # | |_| | (_) | (__| |_| | | | | | |  __/ | | | || (_| | |_| | (_) | | | |
@@ -160,7 +140,6 @@ endif()
 #                 |___/
 
 # main Library
-file(GLOB SRC_FILES ${SRC_DIR}/*.cpp)
 file(GLOB HEADERS ${SRC_DIR}/*.hpp)
 
 add_library(cncpp STATIC ${SRC_FILES})
