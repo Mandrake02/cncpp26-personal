@@ -78,3 +78,46 @@ void Program::reset() {
   clear();
   rewind();
 }
+
+#ifdef CNCPP_TEST_PROGRAM
+
+#include <rang.hpp>
+#include <fmt/format.h>
+
+
+int main(int argc, const char* argv[]) {
+  if (argc != 2) {
+    cerr << "Usage: " << argv[0] << " <file.g>" << endl;
+    return EXIT_FAILURE;
+  }
+  Machine machine{};
+  Program program{&machine};
+  try {
+    program.load(argv[1]);
+  } catch (exception &e) {
+    cerr << rang::fg::red << "Error: " << e.what() << rang::fg::reset << endl;
+    return EXIT_FAILURE;
+  }
+  cerr << program << endl;
+  cerr << "Sequence of positions (to stdout only):" << endl;
+  cout << "n,t_tot,t,lambda,s,x,y,z" << endl;
+  data_t t_tot = 0;
+  for(auto &current_block : program) {
+    //cout << program.current() << ",";
+    current_block.walk([&](Block &b, data_t t, data_t l, data_t s) {
+      if (b.type() > Block::BlockType::RAPID && b.type() < Block::BlockType::NO_MOTION)  {
+        Point pos = b.interpolate(l);
+        cout << fmt::format("{:},{:},{:},{:},{:},{:},{:},{:}", b.n(), t_tot, t, l, s, pos.x(), pos.y(), pos.z()) << endl;
+        t_tot += machine.tq();
+      };
+    });
+  }
+  
+  return EXIT_SUCCESS;
+}
+
+#endif //CNCPP_TEST_PROGRAM
+
+//TASK: If the error is under the _max_error in the machine class we don't want to rise an error
+//TASK: We want to rise an error in R is nan
+//TASK: Fix the color missinh situation
