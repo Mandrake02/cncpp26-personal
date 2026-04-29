@@ -1,6 +1,7 @@
 #include "defines.hpp"
 #include "program.hpp"
 #include <fstream>
+#include <sstream>
 
 using namespace std;
 using namespace cncpp;
@@ -17,7 +18,11 @@ Program::Program(Machine *m) : _machine(m) {}
 Program::~Program() {}
 
 std::string Program::desc(bool colored) const {
-
+  ostringstream ss;
+  for(auto &current_block : *this) {
+    ss << current_block << endl;
+  }
+  return ss.str();
 }
 
 //OPERATORS/OPERATIONS
@@ -42,4 +47,34 @@ void Program::load(const string &filename, bool append) {
   }
   
   file.close();
+}
+
+Program &Program::operator<<(const std::string &line) {
+  if(size() > 0) { //This is not the fisrt block
+    emplace_back(line, back());
+  } else { //This is the first block
+    emplace_back(line);
+  }
+  back().parse(_machine);
+  return *this;
+}
+
+block_iterator Program::load_next() {
+  if(_current == end()) {
+    _current = begin();
+  } else {
+    _current++;
+  }
+  _done = (_current == end());
+  return _current;
+}
+
+void Program::rewind() {
+  _current = begin();
+  _done = false;
+}
+
+void Program::reset() {
+  clear();
+  rewind();
 }

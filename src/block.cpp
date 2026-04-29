@@ -159,7 +159,7 @@ void Block::walk(std::function<void(Block &b, data_t t, data_t l, data_t s)> fun
   data_t t = 0.0;
   data_t l;
   data_t s;
-  while(t < _profile.dt) {
+  while(t <= _profile.dt) {
     l = lambda(t, s);
     func(*this, t, l, s);
     t += _machine->tq();
@@ -299,20 +299,16 @@ void Block::compute() {
 }
 
 void Block::calc_arc() {
-  data_t x0, y0, z0, xc, yc, xf, yf, zf;
+  data_t x0, y0, xc, yc, xf, yf;
   Point p0 = start_point();
   x0 = p0.x();
   y0 = p0.y();
-  z0 = p0.z();
   xf = _target.x();
   yf = _target.y();
-  zf = _target.z();
 
   if (_r) { // if the radius is given
     data_t dx = _delta.x();
     data_t dy = _delta.y();
-    data_t dxy2 = pow(dx, 2) + pow(dy, 2);
-    data_t sq = sqrt(-pow(dy, 2) * dxy2 * (dxy2 - 4 * _r * _r));
     // signs table
     // sign(r) | CW(-1) | CCW(+1)
     // --------------------------
@@ -320,8 +316,11 @@ void Block::calc_arc() {
     //      +1 |     -  |    +
     int s = (_r > 0) - (_r < 0);
     s *= (_type == BlockType::CCWA ? 1 : -1);
-    xc = x0 + (dx - s * sq / dxy2) / 2.0;
-    yc = y0 + dy / 2.0 + s * (dx * sq) / (2 * dy * dxy2);
+    data_t d = hypot(dx, dy);
+    data_t sq = sqrt(pow(_r, 2) - pow(d, 2) / 4.0) / d;
+    xc = (x0 + xf) / 2.0 - s * dy * sq;
+    yc = (y0 + yf) / 2.0 + s * dx * sq;
+
   } else { // if I,J are given
     data_t r2;
     _r = hypot(_i, _j);
@@ -344,7 +343,7 @@ void Block::calc_arc() {
   if (_type == BlockType::CWA)
     _dtheta = -(2 * M_PI - _dtheta);
   //
-  _length = hypot(zf - z0, _dtheta * _r);
+  _length = fabs(_dtheta * _r);
   // from now on, it's safer to drop the sign of radius angle
   _r = fabs(_r);
 }

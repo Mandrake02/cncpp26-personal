@@ -8,7 +8,7 @@
 
 namespace cncpp {
 
-using iterator = std::list<cncpp::Block>::iterator;
+using block_iterator = std::list<cncpp::Block>::iterator;
 
 class Program : public Object, public std::list<Block> {
 public:
@@ -21,13 +21,13 @@ public:
   //OPERATORS/OPERATIONS
   void load(const std::string &filename, bool append = false);
   Program &operator<<(const std::string &line);
-  iterator load_next();
+  block_iterator load_next();
   void rewind();
   void reset();
 
   //ACCESSORS
-  iterator current();
-  bool done();
+  block_iterator current() {return _current;}
+  bool done() {return _done;}
 private:
   Machine *_machine = nullptr;
   std::string _filename = "";
