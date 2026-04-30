@@ -86,18 +86,20 @@ void Program::reset() {
 
 
 int main(int argc, const char* argv[]) {
-  if (argc != 2) {
-    cerr << "Usage: " << argv[0] << " <file.g>" << endl;
+  if (argc != 3) {
+    cerr << "Usage: " << argv[0] << " <machine.json> <file.g>" << endl;
     return EXIT_FAILURE;
   }
-  Machine machine{};
+  string machine_data(argv[1]);
+  Machine machine{machine_data};
   Program program{&machine};
   try {
-    program.load(argv[1]);
+    program.load(argv[2]);
   } catch (exception &e) {
     cerr << rang::fg::red << "Error: " << e.what() << rang::fg::reset << endl;
     return EXIT_FAILURE;
   }
+  cerr << machine << endl;
   cerr << program << endl;
   cerr << "Sequence of positions (to stdout only):" << endl;
   cout << "n,t_tot,t,lambda,s,x,y,z" << endl;

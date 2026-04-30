@@ -65,11 +65,15 @@ block_summary(b1)
 head(block_walk(b1))
 
 m <- Machine()
-prg <- Program("test.g", m)
-df <- program_walk(df)
+prg <- Program("../test.g", m)
+df <- program_walk(prg)
 df %>%
-  ggplot(aes(x=time, y=lambda)) +
+  ggplot(aes(x=time, y=x)) +
   geom_line()
 
+data_t <- read.csv("../log.csv", header = T)
+data_t %>% 
+  ggplot(aes(x=t_tot, y=x)) +
+  geom_line()
 
 ```

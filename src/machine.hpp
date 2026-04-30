@@ -35,15 +35,19 @@ class Machine : public Object {
   Point setpoint(data_t x, data_t y, data_t z) { return _setpoint = Point(x, y, z); } 
   Point position() const { return _position; }
   Point position(Point p) { return _position = p; }
+  nlohmann::json data() {return _data;}
 
   private:
+  nlohmann::json _data{};
+  //Properties
   Point _zero{0, 0, 0};
   Point _offset{0, 0, 0};
-  Point _setpoint, _position;
   data_t _tq = 0.001;        // 1 ms
   data_t _A = 5.0;           // m^s/s
   data_t _fmax = 10000.0;    // mm/min
   data_t _max_error = 0.005; // mm
+  //States parameters
+  Point _setpoint, _position;
   data_t _error = 0.0;       // mm
 };
 
