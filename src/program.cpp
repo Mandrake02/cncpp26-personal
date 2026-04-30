@@ -20,7 +20,7 @@ Program::~Program() {}
 std::string Program::desc(bool colored) const {
   ostringstream ss;
   for(auto &current_block : *this) {
-    ss << current_block << endl;
+    ss << current_block.desc(colored) << endl;
   }
   return ss.str();
 }

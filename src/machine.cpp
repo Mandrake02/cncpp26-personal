@@ -9,7 +9,7 @@ using json = nlohmann::json;
 
 // LIFECYCLE =================================================================
 
-Machine::Machine(nlohmann::json &j) {
+Machine::Machine(json &j) {
 
 }
 
@@ -22,7 +22,7 @@ std::string Machine::desc(bool colored) const {
 }
 
 // OPERATIONS/OPERATORS ======================================================
-void Machine::load(nlohmann::json &j) {
+void Machine::load(json &j) {
   // Implementation for loading from JSON
 }
 
