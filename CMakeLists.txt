@@ -73,7 +73,13 @@ FetchContent_Declare(yaml-cpp
   GIT_TAG HEAD
 )
 
-FetchContent_MakeAvailable(fmt rang json yaml-cpp)
+FetchContent_Declare(toml
+  GIT_REPOSITORY https://github.com/pbosetti/tomlplusplus.git
+  GIT_TAG master
+  GIT_SHALLOW TRUE
+)
+
+FetchContent_MakeAvailable(fmt rang json yaml-cpp toml)
 
 message(STATUS "Dependencies fetched.")
 
@@ -82,8 +88,11 @@ include_directories(
   ${rang_SOURCE_DIR}/include
   ${json_SOURCE_DIR}/include
   ${yaml-cpp_SOURCE_DIR}/include
+  ${toml_SOURCE_DIR}/include
   # /opt/homebrew/include
 )
+
+add_compile_options(-Wno-deprecated-literal-operator)
 
 #    ____             __ _                          _    __ _ _
 #   / ___|___  _ __  / _(_) __ _ _   _ _ __ ___  __| |  / _(_) | ___  ___
