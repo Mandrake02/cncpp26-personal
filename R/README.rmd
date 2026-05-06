@@ -73,7 +73,7 @@ df %>%
 
 data_t <- read.csv("../log.csv", header = T)
 data_t %>% 
-  ggplot(aes(x=t_tot, y=x)) +
+  ggplot(aes(x=t_tot, y=lambda)) +
   geom_line()
 
 ```
