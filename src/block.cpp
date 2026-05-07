@@ -14,7 +14,7 @@ Block::Block(string line, Block &prev) : Block(line) {
   (*this) = prev;
 }
 Block::~Block() {
-  cerr << "Block " << _line << " destroyed." <<endl;
+  //cerr << "Block " << _line << " destroyed." <<endl;
 }
 
 string Block::desc(bool colored) const {

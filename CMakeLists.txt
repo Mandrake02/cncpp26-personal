@@ -67,19 +67,19 @@ FetchContent_Declare(rang
   GIT_SHALLOW    TRUE
 )
 
-FetchContent_Declare(yaml-cpp
-  GIT_REPOSITORY https://github.com/jbeder/yaml-cpp.git
-  GIT_SHALLOW    TRUE
-  GIT_TAG HEAD
-)
-
 FetchContent_Declare(toml
   GIT_REPOSITORY https://github.com/pbosetti/tomlplusplus.git
   GIT_TAG master
   GIT_SHALLOW TRUE
 )
 
-FetchContent_MakeAvailable(fmt rang json yaml-cpp toml)
+FetchContent_Declare(keystroker
+  GIT_REPOSITORY https://github.com/pbosetti/keystroker.git
+  GIT_SHALLOW    TRUE
+  GIT_TAG HEAD
+)
+
+FetchContent_MakeAvailable(fmt rang json toml keystroker)
 
 message(STATUS "Dependencies fetched.")
 
@@ -87,12 +87,15 @@ include_directories(
   ${fmt_SOURCE_DIR}/include
   ${rang_SOURCE_DIR}/include
   ${json_SOURCE_DIR}/include
-  ${yaml-cpp_SOURCE_DIR}/include
   ${toml_SOURCE_DIR}/include
+  ${keystroker_SOURCE_DIR}/include
   # /opt/homebrew/include
 )
 
 add_compile_options(-Wno-deprecated-literal-operator)
+
+find_package(Mads REQUIRED)
+message(STATUS "Found Mads: ${Mads_DIR}")
 
 #    ____             __ _                          _    __ _ _
 #   / ___|___  _ __  / _(_) __ _ _   _ _ __ ___  __| |  / _(_) | ___  ___
@@ -172,6 +175,9 @@ target_link_libraries(program_test PRIVATE cncpp fmt::fmt)
 add_executable(machine_test ${SRC_DIR}/machine.cpp)
 target_compile_definitions(machine_test PRIVATE CNCPP_TEST_MACHINE)
 target_link_libraries(machine_test PRIVATE cncpp fmt::fmt)
+
+add_executable(cnc ${SRC_DIR}/main/cnc.cpp)
+target_link_libraries(cnc PRIVATE cncpp Mads::Mads keystroker rang)
 
 #   ___           _        _ _
 #  |_ _|_ __  ___| |_ __ _| | |
