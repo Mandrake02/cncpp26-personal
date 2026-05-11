@@ -71,9 +71,9 @@ df %>%
   ggplot(aes(x=time, y=x)) +
   geom_line()
 
-data_t <- read.csv("../log.csv", header = T)
+data_t <- read.csv("../test.g.csv", header = T)
 data_t %>% 
-  ggplot(aes(x=t_tot, y=lambda)) +
+  ggplot(aes(x=t_tot, y=yn)) +
   geom_line()
 
 ```
